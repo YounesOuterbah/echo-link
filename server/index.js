@@ -1,6 +1,5 @@
 import express from "express";
 import bodyParser from "body-parser";
-import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
@@ -8,6 +7,10 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
+import { register } from "./controllers/authController.js";
+import { connectDB } from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
+import { verifyToken } from "./middleware/authMiddleware.js";
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
@@ -34,14 +37,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-/* MONGOOSE SETUP */
+/* ROUTES WITH FILE */
+app.post("/auth/register", upload.single("picture"), verifyToken, register);
+
+/* ROUTES */
+app.use("/auth", authRoutes);
+
+/* DB SETUP */
+connectDB();
 const PORT = process.env.PORT || 6001;
-mongoose
-  .connect(process.env.MONGO_URI, {
-    // useNewUrlParser: true,
-    // useUnifiedTopology: true,
-  })
-  .then(() => {
-    app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
-  })
-  .catch((error) => console.log(`${error} did not connect`));
+app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
