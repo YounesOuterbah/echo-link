@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import { register } from "./controllers/authController.js";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import usersRoutes from "./routes/usersRoutes.js";
 import { verifyToken } from "./middleware/authMiddleware.js";
 
 /* CONFIGURATIONS */
@@ -42,6 +43,7 @@ app.post("/auth/register", upload.single("picture"), verifyToken, register);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
+app.use("/users", usersRoutes);
 
 /* DB SETUP */
 connectDB();
